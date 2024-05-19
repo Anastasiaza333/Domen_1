@@ -21,3 +21,7 @@ variable "delete_course_arn" {
 variable "get_all_authors_arn" {
   type = string
 }
+
+variable "sns_topic_arn" {
+  type = string
+}

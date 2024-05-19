@@ -292,3 +292,50 @@ resource "aws_iam_role_policy_attachment" "get_all_authors_policy_attachment" {
 }
 
 # end get-all-courseauthorss
+
+resource "aws_iam_role" "sns_lambda_role" {
+    name = "sns-lambda-role"
+    assume_role_policy = jsonencode({
+        Version = "2012-10-17",
+        Statement = [
+        {
+            Action = "sts:AssumeRole",
+            Effect = "Allow",
+            Principal = {
+            Service = "lambda.amazonaws.com"
+            }
+        }
+        ]
+    })
+}
+
+resource "aws_iam_policy" "sns_lambda_policy" {
+    name = "sns-lambda-policy"
+
+    policy      = jsonencode({
+        Version = "2012-10-17",
+        Statement = [
+        {
+            Action = [
+            "sns:Publish",
+            ],
+            Effect   = "Allow",
+            Resource = var.sns_topic_arn
+        },
+        {
+            Effect = "Allow",
+            Action = [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+            ],
+            Resource = "*"
+        }
+        ]
+    })
+}
+
+resource "aws_iam_role_policy_attachment" "sns_lambda_policy_attachment" {
+    policy_arn = aws_iam_policy.sns_lambda_policy.arn
+    role       = aws_iam_role.sns_lambda_role.name
+}

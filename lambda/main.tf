@@ -111,3 +111,20 @@ resource "aws_lambda_function" "get_all_authors" {
 }
 
 # end get-all-authors
+
+data "archive_file" "sns" {
+  type        = "zip"
+  source_file = "lambda/sns-notify/sns-notify.py"
+  output_path = "lambda/sns-notify/sns-notify.zip"
+}
+
+resource "aws_lambda_function" "sns" {
+  function_name =  "sns-notify"
+  filename      = data.archive_file.sns.output_path
+  role          = var.sns_topic_arn
+  handler       = "sns-notify.lambda_handler"
+
+  source_code_hash = data.archive_file.sns.output_base64sha256
+
+  runtime = "python3.9"
+}

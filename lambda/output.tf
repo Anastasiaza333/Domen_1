@@ -39,3 +39,7 @@ output "update_course_arn" {
 output "update_course_invoke_arn" {
   value = aws_lambda_function.update_course.invoke_arn
 }
+
+output "sns_topic_arn" {
+  value = aws_lambda_function.sns.arn
+}
